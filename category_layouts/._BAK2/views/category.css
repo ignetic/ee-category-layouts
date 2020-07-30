@@ -1,0 +1,372 @@
+
+#sortables .drop-source, #sortables .drop-container, #sortables .drop-source .sortable, #sortables .drop-container .row, #sortables .drop-container .col {
+	box-sizing: border-box;
+}
+
+#sortables {
+	position: relative;
+	margin-top: 20px;
+	margin-bottom: 1em;
+
+}
+#sortables .drop-source {
+	width: 250px;
+	margin-right:-250px;
+		height: 0;
+		padding-bottom: 100%;
+}
+#sortables .drop-container {
+	width: 100%;
+	padding-left: 260px;
+	padding-bottom: 100px;
+}
+
+#sortables h2 {
+	margin-bottom: 10px;
+}
+
+#sortables .drop-container .buttons {
+	margin: 15px -5px;
+}
+#sortables .drop-source {
+	float: left;
+	position: relative;
+	z-index: 2;
+}
+#sortables .drop-source:before,
+#sortables .drop-source:after {
+	content: "";
+	display: table;
+} 
+#sortables .drop-source:after {
+	clear: both;
+}
+#sortables .drop-source {
+	zoom: 1; /* For IE 6/7 (trigger hasLayout) */
+}
+#sortables .drop-description {
+	position: absolute; 
+	top:0; 
+	left:0; 
+	right:0;
+	padding: 20px 10px;
+	/*z-index: 1;*/
+	text-align: center;
+	color: #ddd;
+	font-weight: bold;
+	font-size: 18px;
+}
+#sortables .drop-source .sortable {
+	min-height: 500px;
+    position: absolute;
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+	
+outline: 1px dotted #ddd;
+padding: 10px;
+	
+}
+#sortables .sortable > li.ui-sortable-helper {
+	opacity: 0.5;
+}
+#sortables .drop-container {
+	float: left;
+	float: left;
+	min-width: 350px;
+	min-height: 100px;
+}
+#sortables .drop-target {
+	position: relative;
+	min-height: 100px;
+}
+#sortables .sortable > li:hover { 
+	cursor: move;
+}
+#sortables .sortable li ul { 
+	padding: 3px; 
+	margin-top: 0; 
+	background: #f9f9f9; 
+	color: #666; 
+	border: none; 
+	font-size: 90%; 
+}
+#sortables .sortable li ul.closed {
+	display: none;
+}
+#sortables .sortable li ul li { 
+	padding: 5px;  
+	border-bottom: 1px dotted #ccc;
+}
+#sortables .sortable li ul.sort li { 
+	cursor: ns-resize;
+}
+#sortables .sortable { 
+	list-style-type: none; 
+	margin: 0; 
+	padding: 0 0 20px 0; 
+	min-height: 100px;
+	height: 100%;
+	vertical-align: top;
+}
+#sortables .drop-target .sortable { 
+	padding: 5px 5px 20px 5px; 
+}
+#sortables .sortable > li { 
+	margin: 0 0 5px 0;
+	font-size: 1.2em;
+	background-position: top left; 
+	border: 1px solid #95a3b1;
+	background: #b5bec7;
+	font-weight: normal;
+	color: #ffffff;
+			
+	-webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
+	-moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
+	box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
+		
+}
+#sortables .drop-target .sortable > li { 
+	border-color: #25394b;
+	background-color: #25394b;
+}
+#sortables .sortable > li > h4 {
+	position: relative;
+	padding: 7px 45px 7px 6px;
+	color: #fff;
+	font-size: 13px;
+	font-weight: normal;
+	overflow: hidden;
+	width: 100%;
+	box-sizing: border-box;
+}
+#sortables .sortable > li > h4 .label {
+	white-space: nowrap;
+    width: 80px;
+    display: inline-block;
+}
+#sortables .row .ui-sortable-helper {
+	width: 238px !important;
+}
+#sortables .drop-target .sortable > li > h4 {
+	width: 100%;
+}
+
+#sortables .sortable > li > h4 .handle,
+#sortables .sortable > li > h4 .handle:before,
+#sortables .sortable > li > h4 .handle:after {
+	width: 15px;
+	height: 2px;
+	background: #fff;
+	border-radius: 2px;	
+}
+
+#sortables .sortable > li > h4 .handle {
+	display: inline-block;
+	position: relative;
+	top: -5px;
+	margin: 0 8px 0 0;
+	opacity: 0.7;
+}
+#sortables .sortable > li > h4 .handle:before {
+	content: '';
+    position: absolute;
+	top: -5px;
+}
+#sortables .sortable > li > h4 .handle:after {
+	content: '';
+    position: absolute;
+	top: 5px;
+}
+
+#sortables .sortable > li > h4 i {
+	font-weight: normal;
+	color: #ddd;
+}
+#sortables .sortable > li > h4 a, #sortables .sortable > li > h4 a:link, #sortables .sortable > li > h4 a:visited {
+	color: #fff;
+}
+#sortables .sortable > li > h4 .icons {
+	position: absolute;
+	right: 0;
+	top: 5px;
+}
+#sortables .sortable > li > h4 .chevron {
+	right: 0;
+	top: 0;
+	color: #d2d8dd;
+	width: 20px;
+	height: 20px;
+	cursor: default;
+	margin: 0 3px;
+}
+#sortables .sortable > li > h4 .config {
+	right: 3px;
+	top: 2px;
+	color: #A6B1BB;
+	width: 14px;
+	height: 14px;
+	cursor: default;
+	margin: 0 3px;
+}
+#sortables .drop-target .sortable > li > h4 .config {
+	color: #d2d8dd;
+}
+#sortables .sortable > li > h4 .chevron:hover,
+#sortables .drop-target .sortable > li > h4 .config:hover {
+	color: #fff;
+}
+
+
+#sortables .row {
+	clear: both;
+	padding: 5px 3px;
+	border: 1px dashed #ccc;
+	position: relative;
+	min-width:250px;
+	min-height: 60px;
+	margin-bottom: 5px;
+	width: 100%;
+	text-align: left;
+}
+#sortables .row.ui-sortable-helper {
+	opacity: 0.75;
+}
+#sortables .row:before,
+#sortables .row:after {
+	content: "";
+	display: table;
+} 
+#sortables .row:after {
+	clear: both;
+}
+
+#sortables .button {
+	margin: 10px 5px;
+	background: #ccc;
+	padding: 5px 10px;
+	color: #fff;
+	text-decoration: none;
+	border: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+#sortables .button:hover {
+	text-decoration: none;
+	background: #E7174B;
+	border: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+#sortables .button.add_column {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  margin: 0;
+}
+#sortables .button.remove_row {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	margin: 1px;
+	line-height: 5px;
+	font-weight: bold;
+	background: #CCCCCC;
+	text-decoration: none;	
+}
+#sortables .button.remove_row:hover {
+	text-decoration: none;
+	background: #E7174B;
+}
+#sortables .col {
+  min-width: 150px;
+}
+
+
+#sortables .drop-container .col {
+	width: 50%;
+	border-right: 1px dashed #ccc;
+	height: 100%;
+}
+#sortables .drop-container .col:last-child {
+	border-right: none;
+}
+
+#sortables .drop-container .cols-1 .col {
+	width: 100%;
+}
+#sortables .drop-container .cols-2 .col {
+	width: 50%;
+}
+#sortables .drop-container .cols-3 .col {
+	width: 33.333%;
+}
+#sortables .drop-container .cols-4 .col {
+	width: 25%;
+}
+#sortables .drop-container .cols-5 .col {
+	width: 20%;
+}
+
+/* top menu */
+
+
+#sortables .sortable > li input, #sortables .sortable > li select, #sortables .sortable > li textarea {
+	background: #fff;
+	border: 1px solid #ff000;
+	width: 100%;
+	height: 30px;
+	display: block;
+	font-size: 13px;
+	-webkit-box-shadow: inset 1px 1px 2px 1px rgba(0,0,0,0.1);
+	-moz-box-shadow: inset 1px 1px 2px 1px rgba(0,0,0,0.1);
+	box-shadow: inset 1px 1px 2px 1px rgba(0,0,0,0.1);
+	color: #999;
+}
+#sortables .sortable > li textarea,
+#sortables .sortable > li select[name=cl_textarea] {
+	height: 80px;
+}
+#sortables .sortable > li .cl_image {
+	background: #fff;
+	border: 1px solid #ff000;
+
+	height: 80px;
+	display: block;
+	padding: 5px;
+	margin: 1px;
+}
+#sortables .sortable > li .cl_image .image {
+	
+	position: relative;
+	width: 70px;
+	height: 70px;
+	margin: 5px;
+	overflow: hidden;
+	border: 1px solid #666699;
+	background: #ddd;
+}
+#sortables .sortable > li .cl_image .image:before {
+	content: "";
+	position: absolute;
+	width: 100%;
+	top: 50%;
+	height: 1px;
+	border-top: 1px solid #666699;
+	-webkit-transform: skew(0deg,-45deg);
+	-moz-transform: skew(0deg,-45deg);
+	transform: skew(0deg,-45deg);
+}
+#sortables .sortable > li .cl_image .image:after {
+	content: "";
+	position: absolute;
+	width: 100%;
+	top: 50%;
+	height: 1px;
+	border-top: 1px solid #666699;
+	-webkit-transform: skew(0deg,45deg);
+	-moz-transform: skew(0deg,45deg);
+	transform: skew(0deg,45deg);
+}
