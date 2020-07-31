@@ -30,7 +30,7 @@ class Wygwam_helper extends Helper
      *
      * @return $configHandle The handle for config used by Wygwam JS
      */
-    public static function getConfigJsById($configId)
+    public static function getConfigJsById($configId, $allowedContent='')
     {
         $globalSettings = static::getGlobalSettings();
 
@@ -41,6 +41,7 @@ class Wygwam_helper extends Helper
         //  Editor Config
         // -------------------------------------------
 
+		$allowedContentHandle = (!empty($allowedContent) ? '_'.md5($allowedContent) : '');
 
         if (ee()->db->table_exists('wygwam_configs')
             && is_numeric($configId)
@@ -51,26 +52,19 @@ class Wygwam_helper extends Helper
              */
             // merge custom settings into config
             $customSettings = $config->settings;
-            $configHandle = preg_replace('/[^a-z0-9]/i', '_', $config->config_name).$configId;
+            $configHandle = preg_replace('/[^a-z0-9]/i', '_', $config->config_name).$configId.$allowedContentHandle;
             $config = array_merge($baseConfig, $customSettings);
         } else {
             $customSettings = array();
             $config = $baseConfig;
-            $configHandle = 'default0';
+            $configHandle = 'default0'.$allowedContentHandle;
         }
 
         // skip if already included
         if (isset(static::$_includedConfigs) && in_array($configHandle, static::$_includedConfigs)) {
             return $configHandle;
         }
-/*
-        // language
-        if (! isset($config['language']) || ! $config['language']) {
-            $langMap = static::languageMap();
-            $language = ee()->session->userdata('language');
-            $config['language'] = isset($langMap[$language]) ? $langMap[$language] : 'en';
-        }
-*/
+
         // toolbar
         if (is_array($config['toolbar'])) {
             $config['toolbar'] = static::createToolbar($config['toolbar']);
@@ -85,7 +79,10 @@ class Wygwam_helper extends Helper
         $config['autoGrow_minHeight'] = $config['height'];
 
         // allowedContent
-        if ($config['restrict_html'] == 'n') {
+		if ( ! empty($allowedContent)) {
+			$config['allowedContent'] = $allowedContent;
+		}
+        else if ($config['restrict_html'] == 'n') {
             $config['allowedContent'] = true;
         }
 
@@ -112,62 +109,6 @@ class Wygwam_helper extends Helper
 
         $config['extraPlugins'] = implode(',', $extraPlugins);
 
-        // -------------------------------------------
-        //  File Browser Config
-        // -------------------------------------------
-/*
-        $userGroup = ee()->session->userdata('group_id');
-        $uploadDir = isset($config['upload_dir']) ? $config['upload_dir'] : null;
-        $uploadDestination = static::getUploadDestinations($userGroup, $uploadDir);
-
-        $fileBrowser = isset($globalSettings['file_browser']) ? $globalSettings['file_browser'] : 'ee';
-
-        switch ($fileBrowser) {
-            case 'assets':
-
-                // make sure Assets is actually installed
-                // (otherwise, just use the EE File Manager)
-                if (static::isAssetsInstalled()) {
-                    // include sheet resources
-                    \Assets_helper::include_sheet_resources();
-
-                    // if no upload directory was set, just default to "all"
-                    if (! $uploadDir) {
-                        $uploadDir = '"all"';
-                    }
-
-                    // If this has a source type passed in as well, wrap it in quotes.
-                    if (strpos($uploadDir, ":")) {
-                        $uploadDir = '"'.$uploadDir.'"';
-                    }
-
-                    $config['filebrowserBrowseFunc']      = 'function(params) { Wygwam.loadAssetsSheet(params, '.$uploadDir.', "any"); }';
-                    $config['filebrowserImageBrowseFunc'] = 'function(params) { Wygwam.loadAssetsSheet(params, '.$uploadDir.', "image"); }';
-                    $config['filebrowserFlashBrowseFunc'] = 'function(params) { Wygwam.loadAssetsSheet(params, '.$uploadDir.', "flash"); }';
-
-                    break;
-                }
-
-                // no break
-            default:
-
-                if (! $uploadDestination) {
-                    break;
-                }
-
-                // load the file browser
-                // pass in the uploadDir to limit the directory to the one choosen
-                static::insertJs(NL."\t"."Wygwam.fpUrl = '" . ee('CP/FilePicker')->make($uploadDir)->getUrl() ."';".NL);
-
-                // if no upload directory was set, just default to "all"
-                if (! $uploadDir) {
-                    $uploadDir = '"all"';
-                }
-
-                $config['filebrowserBrowseFunc']      = 'function(params) { Wygwam.loadEEFileBrowser(params, '.$uploadDir.', "any"); }';
-                $config['filebrowserImageBrowseFunc'] = 'function(params) { Wygwam.loadEEFileBrowser(params, '.$uploadDir.', "image"); }';
-        }
-*/
         // add any site page data to wygwam config
         if ($pages = static::getAllPageData()) {
             ee()->lang->loadfile('wygwam');
@@ -180,17 +121,7 @@ class Wygwam_helper extends Helper
                 );
             }
         }
-/*
-        // -------------------------------------------
-        //  'wygwam_config' hook
-        //   - Override any of the config settings
-        //
-        if (ee()->extensions->active_hook('wygwam_config')) {
-            $config = ee()->extensions->call('wygwam_config', $config, $customSettings);
-        }
-        //
-        // -------------------------------------------
-*/
+
         unset($config['upload_dir']);
 
         // -------------------------------------------

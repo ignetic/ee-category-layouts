@@ -56,4 +56,8 @@ The available field types are:
 1.4.2
 - Added Wygwam editor to textarea fields
 
+1.4.3
+- Restricted main Category Description field
+- Fixed issue with dynamically loaing script disrupts RTE display
+
 

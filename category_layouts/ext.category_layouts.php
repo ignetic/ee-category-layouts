@@ -293,6 +293,7 @@ class Category_layouts_ext {
 		}
 
 
+		// Get layouts
 		$settings = array();
 		$layouts = array();
 		$layouts_js = '';
@@ -381,7 +382,7 @@ class Category_layouts_ext {
 		}
 
 		
-		// JS
+		// Load JS
 		$js_vars['layouts_js'] = $layouts_js;
 		$js_vars['columns'] = intval($columns);
 		$js_vars['layouts_url'] = $layouts_url;
@@ -409,6 +410,7 @@ $data .= "
 		// -------------------------------------------
 		// Rich text editor
 		// -------------------------------------------
+		$delayed_rte = '';
 		if (!empty($rte_fields))
 		{
 			ee()->load->add_package_path(SYSPATH.'ee/EllisLab/Addons/rte/');
@@ -416,7 +418,15 @@ $data .= "
 
 			foreach($rte_fields as $field_id => $config_id)
 			{
-				$data .= ee()->rte_lib->build_js($config_id, 'textarea[name='.$field_id.']', NULL, FALSE);
+				// Dynamically loading wygwam scripts descrupts the RTE display, so let's delay it...
+				if ( ! empty($wygwam_fields))
+				{
+					$delayed_rte .= ee()->rte_lib->build_js($config_id, 'textarea[name='.$field_id.']', NULL, FALSE);
+				}
+				else
+				{
+					$date .= ee()->rte_lib->build_js($config_id, 'textarea[name='.$field_id.']', NULL, FALSE);
+				}
 			}
 		}
 
@@ -424,7 +434,7 @@ $data .= "
 		// -------------------------------------------
 		// Wygwam editor
 		// -------------------------------------------
-		if (!empty($wygwam_fields))
+		if ( ! empty($wygwam_fields))
 		{
 			ee()->load->helper('wygwam_helper', 'wygwam_helper');
 			$wygwamHelper = new Wygwam_helper();
@@ -435,18 +445,23 @@ $data .= "
 			
 			$handle = '';
 			$configs = array();
-			$wygwam_configs_js = '';
-			$wygwam_fields_js = '';
+			$wygwam_init_js = '';
 			$wygwam_js = '';
 			
 			foreach ($wygwam_fields as $field_id => $config_id)
 			{
-				$handle = $wygwamHelper->getConfigJsById($config_id);
+				$allowed_content = '';
+				// Cat Description field is limited, so let's restrict it
+				if ($field_id == 'cat_description')
+				{
+					$allowed_content = 'img[!src,alt,width,height]{float};h1 h2 div p b i ul ol a[!href]';
+				}
+				$handle = $wygwamHelper->getConfigJsById($config_id, $allowed_content);
 				$configs[$field_id] = $handle;
 			}
 			
 			$wygwam_configs_js = $wygwamHelper->getJs();
-			
+
 			if (!empty($configs))
 			{
 				$wygwam_js .= '
@@ -458,29 +473,43 @@ $data .= "
 				{
 					// CKEditor script identifies fields by id
 					$wygwam_js .= NL.'$("textarea[name='.$field_id.']").attr("id", "'.$field_id.'");'.NL;
-					$wygwam_fields_js .= NL.'new Wygwam("'.$field_id.'", "'.$config_name.'");'.NL;
-				
+					$wygwam_init_js .= NL.'new Wygwam("'.$field_id.'", "'.$config_name.'");'.NL;
+
 				}
 				
 				$wygwam_js .= '
-					$(window).load(function(){ 
+					$(window).load(function() { 
 
 						var j = document.createElement("script");
 						j.setAttribute("src","' . $wygwam . '");
 						document.getElementsByTagName("body")[0].appendChild(j);
 					
+						// Cat Description has XSS filtering so need to remove tab spacing
 						var waitCKEDITOR = setInterval(function() {
 							if (window.Wygwam && window.CKEDITOR) {
 								clearInterval(waitCKEDITOR);
+
+								// Restrict tab spacing - mainly for category description field
+								CKEDITOR.on("instanceReady", function(ev) {
+									ev.editor.indentationChars = "  ";
+									var blockTags = ["div","h1","h2","h3","h4","h5","h6","p","pre","li","blockquote","ul","ol","table","thead","tbody","tfoot","td","th"];
+									for (var i = 0; i < blockTags.length; i++) {
+										ev.editor.dataProcessor.writer.setRules( blockTags[i], { indent : false, breakBeforeOpen : true, breakAfterOpen : false, breakBeforeClose : false, breakAfterClose : true });
+									}
+								});
+
 								Wygwam.themeUrl = "' . $wygwamThemeUrl . '";
 								'.$wygwam_configs_js.'
-								'.$wygwam_fields_js.'
+								'.$wygwam_init_js.'
+								
+								// Delayed RTE
+								'.$delayed_rte.'
 							}
 						}, 50);
 					});
 				';
 			}
-
+			
 			$data .= $wygwam_js;
 		}
 
