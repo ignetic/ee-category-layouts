@@ -221,7 +221,7 @@ class Category_layouts_ext {
 						$image_max_width .= 'px';
 					}
 					$data .= "
-						.file-chosen #cat_image { max-width: {$image_max_width}; }
+						.file-chosen #cat_image, .fields-upload-chosen-file #cat_image { max-width: {$image_max_width}; }
 					";
 				}
 			}
@@ -512,6 +512,24 @@ $data .= "
 			
 			$data .= $wygwam_js;
 		}
+		
+		
+		// Image size (EE5)
+		if (isset($settings['image_max_width']))
+		{
+			$image_max_width = (int) $settings['image_max_width'];
+			if ($image_max_width > 73)
+			{
+				$data .= '
+					var $catImage = $(".fields-upload-chosen-file img#cat_image");
+					if ($catImage.length) {
+						var largerImage = $(".fields-upload-chosen-file img#cat_image").attr("src").replace("/_thumbs/", "/");
+						$(".fields-upload-chosen-file img#cat_image").attr("src", largerImage);
+					}
+				';
+			}
+		}
+		
 
 
 $data .= "

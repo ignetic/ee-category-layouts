@@ -58,6 +58,9 @@ The available field types are:
 
 1.4.3
 - Restricted main Category Description field
-- Fixed issue with dynamically loaing script disrupts RTE display
+- Fixed issue with dynamically loading script disrupts RTE display
+
+1.4.4
+- Enabled Max Image Size on EE5 to display larger image 
 
 

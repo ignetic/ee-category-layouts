@@ -1,5 +1,4 @@
 
-
 .category-layouts-form h2 {
 	background: #25394b;
 	color: #fff;
@@ -117,11 +116,12 @@
 }*/
 /* EE4 */
 .form-standard > form .category-layouts .cat-row {
-	padding: 10px 10px 40px 10px;
-	margin: 40px -1px;
+	padding: 10px 10px 30px 10px;
+	margin: 30px -1px;
 }
 .form-standard > form .category-layouts.spaced .cat-row {
-	padding: 10px 4px;
+	padding: 10px 5px;
+	margin: 40px -1px;
 }
 .form-standard > form .category-layouts .cat-row:last-of-type {
 	border-bottom: none;
