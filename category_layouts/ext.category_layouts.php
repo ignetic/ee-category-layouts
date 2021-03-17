@@ -454,7 +454,7 @@ $data .= "
 				// Cat Description field is limited, so let's restrict it
 				if ($field_id == 'cat_description')
 				{
-					$allowed_content = 'img[!src,alt,width,height]{float};h1 h2 div p b i ul ol a[!href]';
+					$allowed_content = 'img[!src,alt,width,height]{float};a[!href];h1 h2 div p b i ul ol';
 				}
 				$handle = $wygwamHelper->getConfigJsById($config_id, $allowed_content);
 				$configs[$field_id] = $handle;
@@ -478,6 +478,9 @@ $data .= "
 				}
 				
 				$wygwam_js .= '
+					/************************
+					* Category Layouts Addon
+					*************************/
 					$(window).load(function() { 
 
 						var j = document.createElement("script");
