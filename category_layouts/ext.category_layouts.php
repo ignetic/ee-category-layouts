@@ -1,5 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+//use ExpressionEngine\Addons\Rte\Service;
+//use ExpressionEngine\Addons\Rte\Service\RedactorService;
+use ExpressionEngine\Addons\Rte\RteHelper;
+//use ExpressionEngine\Addons\Rte\Model\Toolset;
+
 /**
  * Category Layouts Extension
  *
@@ -153,7 +158,7 @@ class Category_layouts_ext {
 		if (REQ === 'CP')
 		{
 			// Get group id from uri to use later in cp_js_end
-			if( ! isset($_SESSION)) 
+			if (session_id() == '')
 			{ 
 				session_start(); 
 			}
@@ -163,6 +168,9 @@ class Category_layouts_ext {
 				$_SESSION['category_layouts']['group_id'] = $segments['group_id'];
 				$_SESSION['category_layouts']['uri'] = $segments['uri'];
 			}
+			
+			session_write_close();
+			
 		}
 
 		return;
@@ -184,7 +192,7 @@ class Category_layouts_ext {
 			$data = ee()->extensions->last_call;
 		}
 		
-		if( ! isset($_SESSION)) 
+		if (session_id() == '')
 		{ 
 			session_start(); 
 		}
@@ -192,11 +200,18 @@ class Category_layouts_ext {
 		$group_id = FALSE;
 		$uri = FALSE;
 
-		// Get group id from session then unset it so that it does't apply to other pages
+		// Get group id from session then unset it so that it doesn't apply to other pages
 		if (isset($_SESSION['category_layouts']))
 		{
 			$group_id = (isset($_SESSION['category_layouts']['group_id']) ? $_SESSION['category_layouts']['group_id'] : FALSE);
 			$uri = (isset($_SESSION['category_layouts']['uri']) ? $_SESSION['category_layouts']['uri'] : FALSE);
+		}
+		
+		session_write_close();
+
+		if ( ! $group_id)
+		{
+			return $data;
 		}
 
 		$settings = array();
@@ -221,10 +236,16 @@ class Category_layouts_ext {
 						$image_max_width .= 'px';
 					}
 					$data .= "
-						.file-chosen #cat_image, .fields-upload-chosen-file #cat_image { max-width: {$image_max_width}; }
+						.file-chosen #cat_image, .fields-upload-chosen-file #cat_image { max-width: {$image_max_width}; max-height: {$image_max_width}; }
 					";
 				}
 			}
+		}
+		
+		// EE6
+		if (defined('APP_VER') && version_compare(APP_VER, '6.0.0', '>=')) 
+		{
+			$data .= file_get_contents( URL_THEMES_GLOBAL_ASSET . 'javascript/' . PATH_JS . '/fields/rte/redactor/redactor.min.css');
 		}
 		
 		$data .= ee()->load->view('layout.css', array(), TRUE);
@@ -244,7 +265,7 @@ class Category_layouts_ext {
 	{
 		$data = '';
 
-		if( ! isset($_SESSION)) 
+		if (session_id() == '')
 		{ 
 			session_start(); 
 		}
@@ -264,12 +285,20 @@ class Category_layouts_ext {
 			$uri = (isset($_SESSION['category_layouts']['uri']) ? $_SESSION['category_layouts']['uri'] : FALSE);
 			unset($_SESSION['category_layouts']);
 		}
+		
+		session_write_close();
+
+		if ( ! $group_id && ! $this->EE3)
+		{
+			return $data;
+		}
 
 		// Detect if we are on the right page
 		$uri_segments = array_pad(explode('/', $uri), 5, 0);
 		$layouts_url = ee('CP/URL', 'addons/settings/'.$this->module_name); 
 		
 		$js_vars['layouts_url'] = $layouts_url;
+		$js_vars['ee_version'] = (int)APP_VER;
 
 		if ($segments = $this->get_segments($uri))
 		{
@@ -361,19 +390,20 @@ class Category_layouts_ext {
 								$edit_field = explode(':', $field->element);
 								$editor = $edit_field[0];
 								$config_id = (isset($edit_field[1]) ? $edit_field[1] : FALSE);
-
+								
+								$field_id = 'field_id_'.$field->id;
+								
 								// RTE
 								if (($editor == 'rte' || $editor == 'editor') && $rteInstalled)
 								{
-									$rte_fields['field_id_'.$field->id] = $config_id;
+									$rte_fields[$field_id] = $config_id;
 								}	
 								
 								// Wygwam
 								if ($editor == 'wygwam' && $wygwamInstalled)
 								{
-									$wygwam_fields['field_id_'.$field->id] = $config_id;
-								}
-								
+									$wygwam_fields[$field_id] = $config_id;
+								}								
 							}
 						}
 					}
@@ -389,7 +419,7 @@ class Category_layouts_ext {
 		$js_vars['group_id'] = $group_id;
 		$js_vars['layout_style'] = (isset($settings['layout_style']) ? $settings['layout_style'] : '');
 		
-		if (version_compare(APP_VER, '4', '<'))
+		if ($this->EE3)
 		{
 			$js_view = 'layout_ee3.js';
 		}
@@ -406,28 +436,41 @@ $data .= "
 
 		$data .= ee()->load->view($js_view, $js_vars, TRUE);
 
+		$delayed_rte = '';
 
 		// -------------------------------------------
 		// Rich text editor
 		// -------------------------------------------
-		$delayed_rte = '';
-		if (!empty($rte_fields))
+		if ( ! empty($rte_fields))
 		{
-			ee()->load->add_package_path(SYSPATH.'ee/EllisLab/Addons/rte/');
-			ee()->load->library('rte_lib');
-
-			foreach($rte_fields as $field_id => $config_id)
+			if (defined('APP_VER') && version_compare(APP_VER, '6.0.0', '>=')) 
 			{
-				// Dynamically loading wygwam scripts descrupts the RTE display, so let's delay it...
-				if ( ! empty($wygwam_fields))
+				
+				ee()->load->helper('rte_helper', 'rte_helper');
+				$rteHelper = new Rte_helper();
+			
+				$data .= $rteHelper->getJsFromFieldToolsets($rte_fields);
+			}
+			else
+			{
+				ee()->load->add_package_path(SYSPATH.'ee/EllisLab/Addons/rte/');
+				ee()->load->library('rte_lib');
+
+				foreach($rte_fields as $field_id => $config_id)
 				{
-					$delayed_rte .= ee()->rte_lib->build_js($config_id, 'textarea[name='.$field_id.']', NULL, FALSE);
-				}
-				else
-				{
-					$date .= ee()->rte_lib->build_js($config_id, 'textarea[name='.$field_id.']', NULL, FALSE);
+					// Dynamically loading wygwam scripts disrupts the RTE display, so let's delay it...
+					if ( ! empty($wygwam_fields))
+					{
+						$delayed_rte .= ee()->rte_lib->build_js($config_id, 'textarea[name='.$field_id.']', NULL, FALSE);
+					}
+					else
+					{
+						$data .= ee()->rte_lib->build_js($config_id, 'textarea[name='.$field_id.']', NULL, FALSE);
+					}
 				}
 			}
+
+			
 		}
 
 
@@ -462,7 +505,7 @@ $data .= "
 			
 			$wygwam_configs_js = $wygwamHelper->getJs();
 
-			if (!empty($configs))
+			if ( ! empty($configs))
 			{
 				$wygwam_js .= '
 					var j = document.createElement("script");
@@ -566,7 +609,7 @@ $data .= "
 		if ($this->EE3)
 		{
 
-//			if ($uri_segments[1] == 'cp' && $uri_segments[2] == 'channels' && $uri_segments[3] == 'cat' && (in_array($uri_segments[4], $this->allowed_segments)) )
+			//if ($uri_segments[1] == 'cp' && $uri_segments[2] == 'channels' && $uri_segments[3] == 'cat' && (in_array($uri_segments[4], $this->allowed_segments)) )
 			if ($uri_segments[1] == 'cp' && $uri_segments[2] == 'channels' && $uri_segments[3] == 'cat')
 			{
 				$return['uri'] = implode('/', $uri_segments);

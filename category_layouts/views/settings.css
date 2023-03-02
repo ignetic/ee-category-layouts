@@ -5,7 +5,7 @@
 
 #sortables {
 	position: relative;
-	margin-top: 20px;
+	margin-top: 50px;
 	margin-bottom: 3em;
 
     display: -ms-flexbox;
@@ -14,7 +14,7 @@
 }
 #sortables .drop-source, #sortables .drop-container {
     min-height: 600px;
-    background: #fff;
+    /*background: #fff;*/
     padding: 0;
 	float: left;
 }
@@ -28,16 +28,24 @@
 #sortables .drop-source .sortable {
 	overflow: hidden;
 	overflow-y: auto;
-}
-#sortables .drop-source .sortable {
-	
 	max-height: 100%;
     position: absolute;
     z-index: 2;
     height: 100%;
     width: 100%;
-	border: 1px dashed #ccc;
+	/*border: 1px dashed #ccc;*/
 	padding: 10px;
+	border: 3px solid #eee;
+	border-radius: 4px;
+	
+	background: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent 10px,
+		rgba(0,0,0,.04) 10px,
+		rgba(0,0,0,.04) 20px
+	);
+	
 }
 #sortables .drop-source .sortable::-webkit-scrollbar {
 	background-color: transparent;
@@ -83,24 +91,48 @@
 
 #sortables .drop-description {
 	position: absolute; 
-	top:0; 
+	top: -30px; 
 	left:0; 
 	right:0;
-	padding: 20px 10px;
+	margin: 0;
+	padding: 6px;
 	text-align: center;
-	color: #ddd;
-	font-weight: bold;
-	font-size: 18px;
+	/*color: rgba(46, 54, 237, 0.2);*/
+	/*color: #ddd;*/
+	color: #ccc;
+	font-size: 15px;
+	line-height: 20px;
+	pointer-events: none;
+	background: #eee;
+	border-radius: 4px;
+	text-shadow: 1px 1px #f6f6f6;
 }
 #sortables .drop-container {
 	float: left;
 	float: left;
-	min-width: 350px;
+	min-width: 240px;
 	min-height: 100px;
 }
 #sortables .drop-target {
 	position: relative;
 	min-height: 100px;
+}
+#sortables li {
+	list-style-type: none;
+	margin: 0 0 10px 0;
+	font-size: 1.2em;
+	background-position: top left; 
+	border: 1px solid #008da7;
+	background: #008da7;
+	font-weight: normal;
+	color: #ffffff;
+			
+	-webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
+	-moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
+	box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
+
+	border-radius: 3px;
+	min-width: 100px;
 }
 #sortables li:hover { 
 	cursor: move;
@@ -136,21 +168,7 @@
 #sortables .drop-target .sortable { 
 	padding: 5px 5px 20px 5px; 
 }
-#sortables li {
-	list-style-type: none;
-	margin: 0 0 5px 0;
-	font-size: 1.2em;
-	background-position: top left; 
-	border: 1px solid #008da7;
-	background: #008da7;
-	font-weight: normal;
-	color: #ffffff;
-			
-	-webkit-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
-	-moz-box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
-	box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.252);
-		
-}
+
 #sortables .drop-target .sortable > li { 
 	border-color: #25394b;
 	background-color: #25394b;
@@ -158,7 +176,7 @@
 #sortables li > h4 {
 	position: relative;
 	margin: 0;
-	padding: 7px 45px 7px 6px;
+	padding: 8px 45px 8px 6px;
 	color: #fff;
 	font-size: 13px;
 	font-weight: normal;
@@ -249,13 +267,18 @@
 #sortables .row {
 	clear: both;
 	padding: 5px 3px;
-	border: 1px dashed #ccc;
+	/*border: 1px dashed #ccc;*/
 	position: relative;
-	min-width:250px;
+	min-width:230px;
 	min-height: 60px;
-	margin-bottom: 5px;
+	/*margin-bottom: 5px;*/
 	width: 100%;
 	text-align: left;
+	
+	border: 3px solid #eee;
+	background: #fff;
+	margin-bottom: 20px;
+	border-radius: 4px;
 }
 #sortables .row.ui-sortable-helper {
 	opacity: 0.75;
@@ -309,7 +332,7 @@
 	background: #E7174B;
 }
 #sortables .col {
-  min-width: 150px;
+  min-width: 100px;
 }
 
 #sortables .drop-container .row {
@@ -348,13 +371,17 @@
 	background: #fff;
 	border: none;
 	width: 100%;
-	height: 30px;
+	height: 36px;
 	display: block;
-	font-size: 13px;
+	font-size: 14px;
 	-webkit-box-shadow: inset 1px 1px 2px 1px rgba(0,0,0,0.1);
 	-moz-box-shadow: inset 1px 1px 2px 1px rgba(0,0,0,0.1);
 	box-shadow: inset 1px 1px 2px 1px rgba(0,0,0,0.1);
-	color: #999;
+	color: #666;
+}
+#sortables .drop-source li input, #sortables .drop-source li select, #sortables .drop-source li textarea {	
+	pointer-events: none;
+	color: #ccc;
 }
 #sortables li textarea,
 #sortables li select[name=cl_textarea] {
@@ -415,4 +442,9 @@
     display: block;
     font-size: 14px;
     font-weight: 700;
+}
+
+.wrap .panel-heading {
+	padding: 20px;
+	border-bottom: 1px solid #dfe0ef;
 }

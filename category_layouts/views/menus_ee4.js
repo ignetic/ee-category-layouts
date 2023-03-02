@@ -7,15 +7,20 @@ if (/\/cp\/categories\/group/.test(window.location.href)
 )
 {
 	if ($('.box.sidebar .layout-set').length == 0) {
-		$('.box.sidebar .folder-list li[data-content_id]').each(function (){
+		$('.box.sidebar .folder-list').find('li[data-content_id], div[data-content_id]').each(function (){
 			var group_id = $(this).data('content_id');
+			var attrs = {title: 'Layouts', href: '<?= $layouts_url ?>&group_id='+group_id};
 			if (group_id) {
-				var $layout = $(this).find('.toolbar li.edit').clone(true);
-				$layout.attr('class', 'layout-set').find('a').attr({title: 'Layouts', href: '<?= $layouts_url ?>&group_id='+group_id});
-				$(this).find('.toolbar li.edit').after($layout);
+				var $layout = $(this).find('.toolbar .edit').clone(true);
+				if ($layout.is('a')) {
+					$layout.attr('class', 'layout-set button button--default').attr(attrs);
+				} else {
+					$layout.attr('class', 'layout-set').find('a').attr(attrs);
+				}
+				$(this).find('.toolbar .edit').after($layout);
 			}
 		});
-		$('body').append('<style>.sidebar .folder-list li.act li.layout-set a:before {content:"\\f247"}}</style>');
+		$('head').append('<style>.sidebar .folder-list .act .layout-set a:before {content:"\\f247"}}</style>');
 	}
 }
 

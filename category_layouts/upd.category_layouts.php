@@ -53,16 +53,22 @@ class Category_layouts_upd {
 	public function uninstall()
 	{
 		$mod_id = ee()->db->select('module_id')
-								->get_where('modules', array(
-									'module_name'	=> ucfirst($this->module_name)
-								))->row('module_id');
+			->get_where('modules', array(
+				'module_name'	=> ucfirst($this->module_name)
+			))->row('module_id');
 
-		ee()->db->where('module_id', $mod_id)
-					 ->delete('module_member_groups');
+		if (ee()->db->table_exists('module_member_groups')) {
+			ee()->db->where('module_id', $mod_id)
+				->delete('module_member_groups');
+		}	
+		
+		if (ee()->db->table_exists('module_member_roles')) {
+			ee()->db->where('module_id', $mod_id)
+				->delete('module_member_roles');
+		}
 
 		ee()->db->where('module_name', ucfirst($this->module_name))
 					 ->delete('modules');
-
 			 
 		ee()->load->dbforge();
 		ee()->dbforge->drop_table($this->module_name);

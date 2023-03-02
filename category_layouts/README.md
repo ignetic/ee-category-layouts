@@ -50,6 +50,16 @@ The available field types are:
 
 ## Changelog ##
 
+1.7
+- EE7 Compatibility
+
+1.6
+- EE6 Compatibility
+- Added new EE6 RTE fields
+
+1.4.5
+- EE5 Compatibility
+
 1.4.0
 - Added RTE to textarea fields
 

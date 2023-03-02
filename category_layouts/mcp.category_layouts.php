@@ -119,12 +119,21 @@ class Category_layouts_mcp {
 
 		if ($rteInstalled && ee()->db->table_exists('rte_toolsets'))
 		{
-			$rte_configs = ee()->db->select('toolset_id, name')
-				->get('rte_toolsets');
-			
-			foreach ($rte_configs->result_array() as $row)
+			if (defined('APP_VER') && version_compare(APP_VER, '6.0.0', '>=')) 
 			{
-				$editor_select['Rich Text Editor']['rte:'.$row['toolset_id']] = 'RTE: '.$row['name'];
+				$rte_configs = ee('Model')->get('rte:Toolset')->all()->toArray();
+			}
+			else
+			{
+				//ee()->load->model('rte_toolset_model');
+				//$rte_configs = ee()->rte_toolset_model->get_toolset_list();
+				$rte_configs = ee()->db->select('toolset_id, name')
+					->get('rte_toolsets')->result_array();
+			}
+			
+			foreach ($rte_configs as $row)
+			{
+				$editor_select['Rich Text Editor']['rte:'.$row['toolset_id']] = 'RTE: '.(isset($row['toolset_name']) ? $row['toolset_name'] : $row['name']);
 			}
 		}
 		if ($wygwamInstalled && ee()->db->table_exists('wygwam_configs'))
@@ -217,6 +226,8 @@ class Category_layouts_mcp {
 		ee()->cp->add_to_head('<style>'.$css.'</style>');
 
 		$js .= ee()->load->view('settings.js', $js_vars, TRUE);
+		
+		ee()->cp->add_to_foot('<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>');
 		ee()->cp->add_to_foot('<script type="text/javascript">'.$js.'</script>');
 		
 		
@@ -383,7 +394,6 @@ class Category_layouts_mcp {
 			$edit_link = 'channels/cat/field/';
 		}
 		
-		
 		ee()->javascript->set_global(
 			'sets.importUrl',
 			ee('CP/URL', 'channels/sets')->compile()
@@ -391,14 +401,14 @@ class Category_layouts_mcp {
 		ee()->cp->add_js_script(array(
 			'file' => array('cp/channel/menu'),
 		));
-		
+
 		$sidebar = ee('CP/Sidebar')->make();
 		$header = $sidebar->addHeader(lang('category_groups'));
 
 		$list = $header->addFolderList('categories')
 			->withNoResultsText(sprintf(lang('no_found'), lang('category_groups')));
 
-		if (ee()->cp->allowed_group('can_delete_categories'))
+		if ($this->hasPermission('can_delete_categories'))
 		{
 			$list->withRemoveUrl(ee('CP/URL')->make('addons/settings/'.$this->module_name.'/remove'))
 				->withRemovalKey('content_id');
@@ -418,20 +428,28 @@ class Category_layouts_mcp {
 				ee('CP/URL')->make('addons/settings/'.$this->module_name, array('group_id' => $group->getId()))
 			);
 
-			if (ee()->cp->allowed_group('can_edit_categories'))
+			if ( ! $this->hasPermission('can_edit_categories'))
+			{
+				$item->cannotEdit();
+			}
+			else
 			{
 				$item->withEditUrl(
 					ee('CP/URL')->make($edit_link . $group->getId())
 				);
 			}
 
-			if (ee()->cp->allowed_group('can_delete_categories'))
+			if ( ! $this->hasPermission('can_delete_categories'))
+			{
+				$item->cannotRemove();
+			}
+			else
 			{
 				$item->withRemoveConfirmation(
 					lang('category_layouts') . ': <b>' . $group_name . '</b>'
 				)->identifiedBy($group->getId());
 			}
-			
+
 			if ($active == $group->getId())
 			{
 				$item->isActive();
@@ -440,6 +458,19 @@ class Category_layouts_mcp {
 			{
 				$item->isInactive();
 			}
+		}
+	}
+	
+	private function hasPermission() 
+	{
+		$which = func_get_args();
+		if (defined('APP_VER') && version_compare(APP_VER, '6.0.0', '>='))
+		{
+			return ee('Permission')->hasAll($which);
+		}
+		else
+		{
+			return ee()->cp->allowed_group($which);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 
-// Category Layouts - extension_ee4.js
+// Category Layouts - extension_ee4.js EE4+
 
 if (/\/cp\/categories\/(edit|create)\//.test(window.location.href))
 {
@@ -9,6 +9,7 @@ if (/\/cp\/categories\/(edit|create)\//.test(window.location.href))
 	var columns = '<?= $columns ?>';
 	var group_id = '<?= $group_id ?>';
 	var layout_style = '<?= $layout_style ?>';
+	var ee_version = '<?= $ee_version ?>';
 
 	
 	var IS_JSON = true;
@@ -18,6 +19,8 @@ if (/\/cp\/categories\/(edit|create)\//.test(window.location.href))
 	} catch(err) {
 		IS_JSON = false;
 	}
+	
+	$('body').addClass('version-ee'+ee_version);
 	
 	if (IS_JSON === true && !$.isEmptyObject(layouts)) {
 		
@@ -83,7 +86,7 @@ if (/\/cp\/categories\/(edit|create)\//.test(window.location.href))
 			var catVal = $catInput.val();
 
 			var options = '';
-			$('form.category-layouts-form .fields-select li').each(function(i) {	
+			$('form.category-layouts-form .fields-select li, #fieldset-parent_id .field-inputs li').each(function(i) {
 				var pad = ''
 				var indents = $(this).parents('li').length;
 				for (var i=0; i < indents; i++) {
@@ -97,7 +100,6 @@ if (/\/cp\/categories\/(edit|create)\//.test(window.location.href))
 				var name = $('> label', this).text();
 				options += '<option value="'+value+'">'+pad+name+'</option>'
 			});
-
 
 			var $catSelect = $('<select>')
 				.attr('name', $catInput.attr('name'))

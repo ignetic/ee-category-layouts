@@ -8,6 +8,7 @@ if (/\/cp\/channels\/cat\/(edit-cat|create-cat)\//.test(window.location.href))
 	var json_layouts = '<?= $layouts_js ?>';
 	var columns = '<?= $columns ?>';
 	var group_id = '<?= $group_id ?>';
+	var ee_version = '<?= $ee_version ?>';
 	
 	var IS_JSON = true;
 	try {
@@ -16,6 +17,8 @@ if (/\/cp\/channels\/cat\/(edit-cat|create-cat)\//.test(window.location.href))
 	} catch(err) {
 		IS_JSON = false;
 	}
+	
+	$('body').addClass('version-ee'+ee_version);
 	
 	if (IS_JSON === true && !$.isEmptyObject(layouts)) {
 		

@@ -64,7 +64,7 @@ $( function() {
   
 	function createSortables() {
 
-		$containment = $('#mainContent, body>.wrap');
+		$containment = $('#mainContent, body>.wrap, .ee-wrapper .ee-main__content');
 	
 		// Main Items 
 		var $sortables = $('#sortables ul.sortable').sortable({
@@ -102,6 +102,9 @@ $( function() {
 			cursor: 'move',
 			items: '.row',
 			axis: 'y',
+			update: function( event, ui ) {
+				getLayouts();
+			}
 		})
 
 	}

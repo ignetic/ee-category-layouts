@@ -30,10 +30,14 @@ function display_field_type($field)
 }
 
 ?>
+
+<?=form_open($form_url, array('id' => 'update_form'));?>
 <div class="box">
 	<div class="tbl-ctrls">
 
-	<h1><?= $group_name ?> &nbsp; <a href="<?= $cat_group_link ?>" class="icon icon-settings icon-tool--list"></a></h1>
+	<input type="submit" name="submit" value="Update Layout" class="btn update submit button" style="float:right;" data-submit-text="Update Layout" data-work-text="Updating Layout...">
+
+	<h1><?= $group_name ?> &nbsp; <a href="<?= $cat_group_link ?>" class="icon icon-tool--list fas fa-tags"></a></h1>
 
 	<p><?= lang('category_layouts_description') ?></p>
 
@@ -115,36 +119,40 @@ function display_field_type($field)
 	</div>
 
 
-	<?=form_open($form_url, array('id' => 'update_form'));?>
-		<div class="form-standard">
-			<h2><?= lang('layout_settings') ?></h2>
-			<fieldset>
-				<div class="field-instruct">
-					<label><?= lang('category_description_editor') ?>: </label>
-					<small><i><?= lang('category_description_editor_desc') ?></i></small>
-				</div>
-				<div class="field-control">
-					<?= form_dropdown('settings[cat_editor]', $editor_select, $cat_editor); ?>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="field-instruct">
-					<label><?= lang('category_image_max_width') ?>: </label>
-					<small><i><?= lang('category_image_max_width_desc') ?></i></small>
-				</div>
-				<div class="field-control">
-					<?= form_input('settings[image_max_width]', $image_max_width, 'style="width:140px"'); ?>
-				</div>
-			</fieldset>
-			<fieldset>
-				<div class="field-instruct">
-					<label><?= lang('layout_style') ?>: </label>
-					<small><i><?= lang('layout_style_desc') ?></i></small>
-				</div>
-				<div class="field-control">
-					<?= form_dropdown('settings[layout_style]', array('' => 'Default', 'spaced' => 'Spaced'), $layout_style); ?>
-				</div>
-			</fieldset>
+
+		<div class="form-standard panel">
+			<div class="panel-heading">
+				<h3><?= lang('layout_settings') ?></h3>
+			</div>
+			<div class="panel-body">
+				<fieldset>
+					<div class="field-instruct">
+						<label><?= lang('category_description_editor') ?>: </label>
+						<small><i><?= lang('category_description_editor_desc') ?></i></small>
+					</div>
+					<div class="field-control">
+						<?= form_dropdown('settings[cat_editor]', $editor_select, $cat_editor); ?>
+					</div>
+				</fieldset>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?= lang('category_image_max_width') ?>: </label>
+						<small><i><?= lang('category_image_max_width_desc') ?></i></small>
+					</div>
+					<div class="field-control">
+						<?= form_input('settings[image_max_width]', $image_max_width, 'style="width:140px"'); ?>
+					</div>
+				</fieldset>
+				<fieldset>
+					<div class="field-instruct">
+						<label><?= lang('layout_style') ?>: </label>
+						<small><i><?= lang('layout_style_desc') ?></i></small>
+					</div>
+					<div class="field-control">
+						<?= form_dropdown('settings[layout_style]', array('' => 'Default', 'spaced' => 'Spaced'), $layout_style); ?>
+					</div>
+				</fieldset>
+			</div>
 		</div>
 
 		<input type="hidden" name="group_id" value="<?= $group_id ?>">
